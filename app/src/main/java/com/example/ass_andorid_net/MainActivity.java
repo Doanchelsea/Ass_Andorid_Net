@@ -1,5 +1,8 @@
 package com.example.ass_andorid_net;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.example.ass_andorid_net.fragment.CategoryFragment;
@@ -7,8 +10,10 @@ import com.example.ass_andorid_net.fragment.HomeFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
@@ -46,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new HomeFragment()).commit();
         navigationView.setCheckedItem(R.id.nav_home);
         toolbar.setTitle("Latest");
+        initPermission();
     }
 
     @Override
@@ -89,5 +95,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 1) {
+            if (grantResults.length == 1 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("Doan", "onRequestPermissionsResult: success ");
+            } else {
+                Log.d("Doan", "onRequestPermissionsResult: Failed");
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+    public void initPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+                //Permisson don't granted
+                if (shouldShowRequestPermissionRationale(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    Log.d("Doan", "onRequestPermissionsResult: success ");
+                }
+                // Permisson don't granted and dont show dialog again.
+                else {
+                    Log.d("Doan", "onRequestPermissionsResult: Failed");
+                }
+                //Register permission
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+
+            }
+        }
     }
 }
